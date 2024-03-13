@@ -3,11 +3,10 @@
 
 name: .NET
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: 
+  release:
+    types:
+      - created
 
 jobs:
   build:
@@ -24,15 +23,15 @@ jobs:
     - name: Build win-x64
       run: dotnet publish Subspace.Agent -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
     - name: Compress Build Win-x64 Artifact
-      run: zip -r win-x64.zip /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/win-x64
-      working-directory: /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/win-x64
+      run: zip -r win-x64.zip /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/win-x64/publish
+      working-directory: /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/win-x64/publish
     - name: Upload Release Win-x64 Asset
       id: upload-release-win-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ github.event.release.upload_url }}
         asset_path: ./path/to/your/build/directory/win-x64.zip  # 压缩文件的路径
         asset_name: win-x64.zip  # 压缩文件的名称
         asset_content_type: application/zip
@@ -40,15 +39,15 @@ jobs:
     - name: Build linux-x64
       run: dotnet publish Subspace.Agent -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
     - name: Compress Build Linux-x64 Artifact
-      run: zip -r linux-x64.zip /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/linux-x64
-      working-directory: /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/linux-x64
+      run: zip -r linux-x64.zip /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/linux-x64/publish
+      working-directory: /home/runner/work/Subspace.Agent/Subspace.Agent/Subspace.Agent/bin/Release/net8.0/linux-x64/publish
     - name: Upload Release Linux-x64 Asset
       id: upload-release-linux-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ github.event.release.upload_url }}
         asset_path: ./path/to/your/build/directory/linux-x64.zip  # 压缩文件的路径
         asset_name: linux-x64.zip  # 压缩文件的名称
         asset_content_type: application/zip
