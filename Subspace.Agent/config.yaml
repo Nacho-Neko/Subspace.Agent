@@ -1,0 +1,8 @@
+﻿# Server
+# 服务器监听
+listen : "http://*:9944/"
+# 节点池
+# Node Pool
+node:
+  - name: "Private Node-0"
+    url: "ws://192.168.0.185:9944"
