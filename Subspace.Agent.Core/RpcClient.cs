@@ -5,7 +5,6 @@ using Subspace.Agent.Core.Model;
 using Subspace.Agent.Core.Model.Event;
 using Subspace.Agent.Core.Model.Method;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace Subspace.Agent.Core
 {

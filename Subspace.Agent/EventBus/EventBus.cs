@@ -37,7 +37,7 @@ namespace Subspace.Agent.EventBus
                 _ = handler?.Invoke(sender, e);
             }
         }
-        public async Task StartAsync()
+        public void Start()
         {
             Assembly assembly = typeof(IBusControl).Assembly;
             var typesWithConsumers = new List<Type>();

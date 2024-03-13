@@ -3,6 +3,6 @@
     public interface IBusControl
     {
         public void Publish<TEventArgs>(RpcClient sender, TEventArgs e);
-        public Task StartAsync();
+        public void Start();
     }
 }

@@ -5,4 +5,4 @@ listen : "http://*:9944/"
 # Node Pool
 node:
   - name: "Private Node-0"
-    url: "ws://192.168.0.185:9944"
+    url: "ws://43.248.117.35:8888"

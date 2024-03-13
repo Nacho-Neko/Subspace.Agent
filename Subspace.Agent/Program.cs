@@ -57,7 +57,7 @@ builder.RegisterType<SubmitSolutionResponseMethod>().InstancePerLifetimeScope();
 
 var container = builder.Build();
 var busControl = container.Resolve<IBusControl>();
-await busControl.StartAsync();
+busControl.Start();
 
 
 var yamlDeserializer = new DeserializerBuilder().Build();
