@@ -48,18 +48,20 @@ namespace Subspace.Agent.Core
             foreach (var rpcPool in Persistent)
             {
                 RpcClient rpc = rpcPool.Value;
-                rpc.onDisconnected += (sender, args) =>
-                {
-                    if (Persistent.TryGetValue(args, out RpcClient? socketRpc))
-                    {
-                        reConnectQueues.Add(rpc.NodeInfo);
-                        logger.LogInformation($"Disconnect RpcClient {Persistent.Count} Id : {socketRpc.NodeInfo.name} Url : {socketRpc.NodeInfo.url}");
-                        args.Dispose();
-                        Persistent.Remove(key: args);
-                    }
-                };
+                rpc.onDisconnected += Rpc_onDisconnected;
             }
             _ = Task.Run(ReConnectAsync).ConfigureAwait(false);
+        }
+
+        private void Rpc_onDisconnected(RpcClient rpcClient, ILifetimeScope args)
+        {
+            if (Persistent.TryGetValue(args, out RpcClient? socketRpc))
+            {
+                reConnectQueues.Add(rpcClient.NodeInfo);
+                logger.LogInformation($"Disconnect RpcClient {Persistent.Count} Id : {socketRpc.NodeInfo.name} Url : {socketRpc.NodeInfo.url}");
+                args.Dispose();
+                Persistent.Remove(key: args);
+            }
         }
 
         public async Task ReConnectAsync()
@@ -80,6 +82,7 @@ namespace Subspace.Agent.Core
                         logger.LogInformation($"reConnect Success Id : {reConnectQueue.name} Url : {reConnectQueue.url}");
                         Persistent.Add(scope, rpcClient);
                         reConnectSucess.Add(rpcClient.NodeInfo);
+                        rpcClient.onDisconnected += Rpc_onDisconnected;
                     }
                     catch
                     {
