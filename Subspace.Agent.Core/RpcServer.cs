@@ -258,24 +258,23 @@ namespace Subspace.Agent.Core
         public class SlotInfoMessageClass : IConsumer<SlotInfo>
         {
             public static ConcurrentDictionary<string, JsonRpc> SubscribeSlotInfo = new ConcurrentDictionary<string, JsonRpc>();
-            private ulong last_slotNumber;
             private readonly Stopwatch stopwatch = new Stopwatch();
-            public async Task ConsumeAsync(RpcClient sender, SlotInfo context)
+            private ulong last_slotNumber;
+            public async Task ConsumeAsync(RpcClient sender, SlotInfo slotInfo)
             {
-                if (context.slotNumber > last_slotNumber)
+                if (slotInfo.slotNumber > last_slotNumber)
                 {
                     sender.Latency = 0;
                     sender.logger.LogDebug($"Imported #{slotInfo.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
-                    SoltImported?.Invoke(stopwatch.ElapsedMilliseconds, slotInfo);
                     stopwatch.Restart();
                     stopwatch.Start();
-                    last_slotNumber = context.slotNumber;
+                    last_slotNumber = slotInfo.slotNumber;
                     var tasks = new List<Task>();
                     foreach (KeyValuePair<string, JsonRpc> keyValuePair in SubscribeSlotInfo)
                     {
                         if (!keyValuePair.Value.IsDisposed)
                         {
-                            var task = keyValuePair.Value.NotifyWithParameterObjectAsync("subspace_slot_info", new NotifyMothod<SlotInfo>(keyValuePair.Key, context));
+                            var task = keyValuePair.Value.NotifyWithParameterObjectAsync("subspace_slot_info", new NotifyMothod<SlotInfo>(keyValuePair.Key, slotInfo));
                             tasks.Add(task);
                         }
                     }

@@ -3,7 +3,6 @@ using Autofac.Core;
 using Microsoft.Extensions.Logging;
 using Subspace.Agent.Core.Model;
 using System.Net.WebSockets;
-using System.Runtime.Serialization;
 
 namespace Subspace.Agent.Core
 {
