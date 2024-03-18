@@ -147,9 +147,9 @@ namespace Subspace.Agent.Core
             return segmentHeaders;
         }
         [JsonRpcMethod(name: "subspace_piece")]
-        public async Task<UInt16[]?> PieceAsync(UInt64 piece_index)
+        public async Task<ArraySegment<UInt16>?> PieceAsync(UInt64 piece_index)
         {
-            UInt16[]? piece = null;
+            ArraySegment<UInt16>? piece = null;
             await retryPolicy.Execute(async () =>
             {
                 RpcClient rpcClient = clientPool.GetConnect();
@@ -265,7 +265,8 @@ namespace Subspace.Agent.Core
                 if (context.slotNumber > last_slotNumber)
                 {
                     sender.Latency = 0;
-                    sender.logger.LogDebug($"Imported #{context.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
+                    sender.logger.LogDebug($"Imported #{slotInfo.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
+                    SoltImported?.Invoke(stopwatch.ElapsedMilliseconds, slotInfo);
                     stopwatch.Restart();
                     stopwatch.Start();
                     last_slotNumber = context.slotNumber;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace Subspace.Agent.Core.Model.Method
 {
@@ -12,12 +13,12 @@ namespace Subspace.Agent.Core.Model.Method
             this.logger = logger;
             this.rpcClient = rpcClient;
         }
-        public async Task<UInt16[]?> InvokeAsync(UInt64 piece_index)
+        public async Task<ArraySegment<UInt16>?> InvokeAsync(UInt64 piece_index)
         {
             try
             {
                 logger.LogTrace($"Method : subspace_piece");
-                UInt16[]? resutl = await rpcClient.InvokeAsync<UInt16[]>("subspace_piece", piece_index);
+                ArraySegment<UInt16>? resutl = await rpcClient.InvokeAsync<ArraySegment<UInt16>?>("subspace_piece", piece_index);
                 logger.LogTrace($"Result : {resutl}");
                 return resutl;
             }
