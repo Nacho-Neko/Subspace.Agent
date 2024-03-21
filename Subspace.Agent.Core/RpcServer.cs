@@ -258,7 +258,7 @@ namespace Subspace.Agent.Core
         public class SlotInfoMessageClass : IConsumer<SlotInfo>
         {
             public static ConcurrentDictionary<string, JsonRpc> SubscribeSlotInfo = new ConcurrentDictionary<string, JsonRpc>();
-            private readonly Stopwatch stopwatch = new Stopwatch(); 
+            private readonly Stopwatch stopwatch = new Stopwatch();
             private ulong last_slotNumber;
             public async Task ConsumeAsync(RpcClient sender, SlotInfo slotInfo)
             {
@@ -282,10 +282,11 @@ namespace Subspace.Agent.Core
                 }
                 else
                 {
-                    if (slotInfo.slotNumber == last_slotNumber) {
-                        // sender.logger.LogDebug($"Imported #{slotInfo.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
+                    //  如果给的插槽不是最新的就不要修改他的延迟防止
+                    if (slotInfo.slotNumber == last_slotNumber)
+                    {
                         // 距离上一个插槽延迟是 ElapsedMilliseconds + sender.Latency
-                        sender.Latency = stopwatch.ElapsedMilliseconds;
+                        sender.Latency = stopwatch.ElapsedMilliseconds + 1;
                         sender.Stopwatch.Restart();
                     }
                 }
