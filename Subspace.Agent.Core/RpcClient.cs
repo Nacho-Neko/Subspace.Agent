@@ -12,7 +12,7 @@ namespace Subspace.Agent.Core
     {
         public delegate void EventBusHandler(RpcClient sender, ILifetimeScope e);
         public event EventBusHandler? onDisconnected;
-
+        public readonly Stopwatch Stopwatch = new Stopwatch();
         public readonly ILogger logger;
         private readonly ILifetimeScope lifetimeScope;
         private readonly WebSocketMessageHandler webSocketMessageHandler;
@@ -38,7 +38,7 @@ namespace Subspace.Agent.Core
         public SubmitSolutionResponseMethod submitSolution;
 #nullable enable
 #nullable disable
-        public double Latency = -1;
+        public long Latency = -1;
         public NodeInfo NodeInfo;
 #nullable enable
         public bool Available { get { if (nodeSyncStatusChangeEven == null) return false; return nodeSyncStatusChangeEven.Synced; } }
@@ -47,6 +47,7 @@ namespace Subspace.Agent.Core
             this.logger = logger;
             this.lifetimeScope = lifetimeScope;
             this.webSocketMessageHandler = webSocketMessageHandler;
+            Stopwatch.Start();
             Disconnected += RpcClient_Disconnected;
         }
         private void RpcClient_Disconnected(object? sender, JsonRpcDisconnectedEventArgs e)
@@ -80,11 +81,7 @@ namespace Subspace.Agent.Core
             result = await slotInfoEven.SubscribeAsync();
             try
             {
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
                 await getFarmerAppInfo.InvokeAsync();
-                Latency = stopwatch.Elapsed.TotalMilliseconds;
-                stopwatch.Stop();
             }
             catch (Exception)
             {

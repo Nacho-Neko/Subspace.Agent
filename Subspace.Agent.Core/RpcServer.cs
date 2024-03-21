@@ -258,16 +258,16 @@ namespace Subspace.Agent.Core
         public class SlotInfoMessageClass : IConsumer<SlotInfo>
         {
             public static ConcurrentDictionary<string, JsonRpc> SubscribeSlotInfo = new ConcurrentDictionary<string, JsonRpc>();
-            private readonly Stopwatch stopwatch = new Stopwatch();
+            private readonly Stopwatch stopwatch = new Stopwatch(); 
             private ulong last_slotNumber;
             public async Task ConsumeAsync(RpcClient sender, SlotInfo slotInfo)
             {
                 if (slotInfo.slotNumber > last_slotNumber)
                 {
-                    sender.Latency = 0;
                     sender.logger.LogDebug($"Imported #{slotInfo.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
+                    sender.Latency = 0;
+                    sender.Stopwatch.Restart();
                     stopwatch.Restart();
-                    stopwatch.Start();
                     last_slotNumber = slotInfo.slotNumber;
                     var tasks = new List<Task>();
                     foreach (KeyValuePair<string, JsonRpc> keyValuePair in SubscribeSlotInfo)
@@ -282,9 +282,12 @@ namespace Subspace.Agent.Core
                 }
                 else
                 {
-                    // 这里设置延迟为0+x
-                    sender.Latency = stopwatch.Elapsed.TotalMilliseconds;
-                    // sender.logger.LogDebug($"Imported #{context.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
+                    if (slotInfo.slotNumber == last_slotNumber) {
+                        // sender.logger.LogDebug($"Imported #{slotInfo.slotNumber} from {sender.NodeInfo.name} interval {stopwatch.ElapsedMilliseconds}");
+                        // 距离上一个插槽延迟是 ElapsedMilliseconds + sender.Latency
+                        sender.Latency = stopwatch.ElapsedMilliseconds;
+                        sender.Stopwatch.Restart();
+                    }
                 }
 
             }

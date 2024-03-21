@@ -95,20 +95,20 @@ namespace Subspace.Agent.Core
                     {
                         reConnectQueues.Remove(reConnectSuces);
                     }
-                Thread.Sleep(3000);
+                Thread.Sleep(10000);
             }
         }
         public RpcClient GetConnect()
         {
             RpcClient? rpcClient = null;
-            double Lowest = double.MaxValue;
-            foreach (var Value in Persistent.Values)
+            long base_latency = long.MaxValue;
+            foreach (var client in Persistent.Values)
             {
-                double Latency = Value.Latency;
-                if (Latency >= 0 && Latency < Lowest)
+                long node_latency = client.Latency + client.Stopwatch.ElapsedMilliseconds;
+                if (node_latency >= 0 && node_latency < base_latency)
                 {
-                    Lowest = Latency;
-                    rpcClient = Value;
+                    base_latency = node_latency;
+                    rpcClient = client;
                 }
             }
             if (rpcClient == null)
