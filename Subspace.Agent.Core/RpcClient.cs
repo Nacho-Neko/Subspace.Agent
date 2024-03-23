@@ -38,7 +38,7 @@ namespace Subspace.Agent.Core
         public SubmitSolutionResponseMethod submitSolution;
 #nullable enable
 #nullable disable
-        public long Latency = -1;
+        public long Latency = 0;
         public NodeInfo NodeInfo;
 #nullable enable
         public bool Available { get { if (nodeSyncStatusChangeEven == null) return false; return nodeSyncStatusChangeEven.Synced; } }

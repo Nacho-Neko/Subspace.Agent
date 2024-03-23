@@ -290,7 +290,6 @@ namespace Subspace.Agent.Core
                         sender.Stopwatch.Restart();
                     }
                 }
-
             }
         }
         public class NotifyMothod<T>
