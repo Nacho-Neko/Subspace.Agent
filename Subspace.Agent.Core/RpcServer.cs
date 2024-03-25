@@ -15,7 +15,7 @@ using static Subspace.Agent.Core.Model.Method.SubmitSolutionResponseMethod;
 
 namespace Subspace.Agent.Core
 {
-    public class RpcServer : IDisposable
+	public class RpcServer : IDisposable
     {
         public static AsyncLocal<string?> CurrentClientIp = new AsyncLocal<string?>();
         public event EventHandler<RpcServer>? Disconnected;
@@ -146,6 +146,11 @@ namespace Subspace.Agent.Core
             });
             return segmentHeaders;
         }
+        /// <summary>
+        /// 要提供一种使用CDN 的手段
+        /// </summary>
+        /// <param name="piece_index"></param>
+        /// <returns></returns>
         [JsonRpcMethod(name: "subspace_piece")]
         public async Task<ArraySegment<UInt16>?> PieceAsync(UInt64 piece_index)
         {

@@ -48,7 +48,6 @@ namespace Subspace.Agent
                 }
                 logger.LogDebug(message);
             }
-
         }
     }
 }
