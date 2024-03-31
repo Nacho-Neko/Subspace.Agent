@@ -18,15 +18,15 @@ namespace Subspace.Agent
                 {
                     return;
                 }
-                if (message.Contains("Information"))
-                {
-                    return;
-                }
-                if (message.Contains("Verbose"))
-                {
-                    return;
-                }
-                logger.LogDebug(message);
+				if (message.Contains("Invoking"))
+				{
+					return;
+				}
+				if (message.Contains("JsonRpc"))
+				{
+					return;
+				}
+				logger.LogInformation(message);
             }
         }
 
@@ -38,15 +38,15 @@ namespace Subspace.Agent
                 {
                     return;
                 }
-                if (message.Contains("Information"))
-                {
-                    return;
-                }
-                if (message.Contains("Verbose"))
-                {
-                    return;
-                }
-                logger.LogDebug(message);
+				if (message.Contains("Invoking"))
+				{
+					return;
+				}
+				if (message.Contains("JsonRpc"))
+				{
+					return;
+				}
+				logger.LogInformation(message);
             }
         }
     }
