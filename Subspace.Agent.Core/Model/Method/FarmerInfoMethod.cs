@@ -19,7 +19,7 @@ namespace Subspace.Agent.Core.Model.Method
                 FarmerAppInfo farmerApp = await rpcClient.InvokeAsync<FarmerAppInfo>("subspace_getFarmerAppInfo");
                 if (farmerApp == null)
                 {
-                    throw new Exception($"{rpcClient.NodeInfo.name} farmerAppInfo 返回是空的");
+                    throw new Exception($"{rpcClient.NodeInfo.Name} farmerAppInfo 返回是空的");
                 }
                 logger.LogTrace($"Result : {farmerApp}");
                 return farmerApp;

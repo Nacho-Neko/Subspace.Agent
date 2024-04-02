@@ -36,11 +36,14 @@ namespace Subspace.Agent.Core
 		public SegmentHeadersMethod segmentHeaders;
 		public SubmitRewardSignatureMethod submitRewardSignature;
 		public SubmitSolutionResponseMethod submitSolution;
-#nullable enable
-#nullable disable
-		public long Latency = 0;
+
+		public long Interval = 0;
+		/// <summary>
+		/// 节点获取2次区块之间的间隔
+		/// </summary>
+		public long Delay { get { return Interval + this.Stopwatch.ElapsedMilliseconds; } }
 		public NodeInfo NodeInfo;
-#nullable enable
+
 		public bool Available { get { if (nodeSyncStatusChangeEven == null) return false; return nodeSyncStatusChangeEven.Synced; } }
 		public RpcClient(ILogger<RpcClient> logger, ILifetimeScope lifetimeScope, WebSocketMessageHandler webSocketMessageHandler) : base(webSocketMessageHandler)
 		{
@@ -84,8 +87,8 @@ namespace Subspace.Agent.Core
 			}
 			catch (Exception)
 			{
-				logger.LogError($"{nodeInfo.name} 已连接，但是无法返回正常数据!");
-				Latency = -1;
+				logger.LogError($"{nodeInfo.Name} 已连接，但是无法返回正常数据!");
+				Interval = -1;
 			}
 		}
 	}

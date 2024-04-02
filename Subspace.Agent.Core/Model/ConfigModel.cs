@@ -1,7 +1,7 @@
 ﻿namespace Subspace.Agent.Core.Model
 {
 
-    public class ConfigModel
+	public class ConfigModel
     {
 		public ConfigModel()
 		{
@@ -9,12 +9,12 @@
 
 		public ConfigModel(string listen)
 		{
-			this.listen = listen;
-			node = new List<NodeInfo>();
+			this.Listen = listen;
+			Nodes = new List<NodeInfo>();
 		}
 #nullable disable
-		public string listen { get; set; }
-        public List<NodeInfo> node { get; set; }
+		public string Listen { get; set; }
+		public List<NodeInfo>? Nodes { get; set; }
 #nullable enable
     }
 
@@ -26,12 +26,18 @@
 
 		public NodeInfo(string url, string name)
 		{
-			this.url = url;
-			this.name = name;
+			this.Url = url;
+			this.Name = name;
 		}
 #nullable disable
-		public string url { get; set; }
-        public string name { get; set; }
+		public string Url { get; set; }
+        public string Name { get; set; }
 #nullable enable
-    }
+		public List<NodePool>? Pools { get; set; }
+	}
+	public enum NodePool
+	{
+		Piece,
+		Submit,
+	}
 }
