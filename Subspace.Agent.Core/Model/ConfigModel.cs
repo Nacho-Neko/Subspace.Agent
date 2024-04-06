@@ -39,5 +39,6 @@
 	{
 		Piece,
 		Submit,
+		AppInfo,
 	}
 }

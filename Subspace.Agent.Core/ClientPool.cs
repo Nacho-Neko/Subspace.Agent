@@ -100,6 +100,7 @@ namespace Subspace.Agent.Core
 		}
 		public RpcClient GetConnect()
 		{
+			var client_pool = Persistent.Values.Where(it => it.Delay <= 4000);
 			RpcClient? rpcClient = null;
 			long base_latency = long.MaxValue;
 			foreach (var client in Persistent.Values)
@@ -118,9 +119,15 @@ namespace Subspace.Agent.Core
 			return rpcClient;
 		}
 
-		public List<RpcClient> GetConnect(NodePool Tag)
+		public IEnumerator<RpcClient> GetConnects()
 		{
-			var client_pool = Persistent.Values.Where(it => it.Delay <= 4000);
+			var client_pool = Persistent.Values.Where(it => it.Delay <= 2000);
+			List<RpcClient> rpcClients = client_pool.OrderBy(it => it.Delay).ToList();
+			return rpcClients.GetEnumerator();
+		}
+		public IEnumerator<RpcClient> GetConnects(NodePool Tag)
+		{
+			var client_pool = Persistent.Values.Where(it => it.Delay <= 2000);
 			List<RpcClient> result = new List<RpcClient>();
 			List<RpcClient> rpcClients_frist = client_pool.Where(it => it.NodeInfo.Pools != null && it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
 			List<RpcClient> rpcClients_second = client_pool.Where(it => it.NodeInfo.Pools == null || !it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
@@ -130,7 +137,7 @@ namespace Subspace.Agent.Core
 			{
 				throw new Exception("Rpc 客户端池中未找到任何一个可用的Rpc客户端");
 			}
-			return result;
+			return result.GetEnumerator();
 		}
 	}
 }

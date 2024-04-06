@@ -36,7 +36,7 @@ namespace Subspace.Agent.Core
 			this.clientPool = clientPool;
 			retryPolicy = Policy
 				.Handle<Exception>() // 指定应该在哪些异常发生时重试
-				.Retry(2, (exception, retryCount) =>
+				.Retry(3, (exception, retryCount) =>
 				{
 					// 这里可以记录异常信息和重试次数
 					Console.WriteLine($"异常: {exception.Message}. 重试次数: {retryCount}");
@@ -124,29 +124,53 @@ namespace Subspace.Agent.Core
 		[JsonRpcMethod(name: "subspace_getFarmerAppInfo")]
 		public async Task<FarmerAppInfo> GetFarmerAppInfoAsync()
 		{
-			RpcClient rpcClient = clientPool.GetConnect();
-			return await rpcClient.getFarmerAppInfo.InvokeAsync();
+			FarmerAppInfo farmerAppInfo = null;
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
+			await retryPolicy.Execute(async () =>
+			{
+				if (rpcClients.MoveNext())
+				{
+					RpcClient rpcClient = rpcClients.Current;
+					farmerAppInfo = await rpcClient.getFarmerAppInfo.InvokeAsync();
+				}
+			});
+			return farmerAppInfo;
 		}
 		[JsonRpcMethod(name: "subspace_submitRewardSignature")]
 		public async Task SubmitRewardSignatureAsync(RewardSigningReques rewardSigningReques)
 		{
-			RpcClient rpcClient = clientPool.GetConnect();
-			await rpcClient.submitRewardSignature.InvokeAsync(rewardSigningReques);
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Submit);
+			await retryPolicy.Execute(async () =>
+			{
+				if (rpcClients.MoveNext())
+				{
+					RpcClient rpcClient = rpcClients.Current;
+					await rpcClient.submitRewardSignature.InvokeAsync(rewardSigningReques);
+				}
+			});
 		}
 		[JsonRpcMethod(name: "subspace_submitSolutionResponse")]
 		public async Task SubmitSolutionResponseAsync(SolutionResponse solutionResponse)
 		{
-			RpcClient rpcClient = clientPool.GetConnect();
-			await rpcClient.submitSolution.InvokeAsync(solutionResponse);
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Submit);
+			await retryPolicy.Execute(async () =>
+			{
+				RpcClient rpcClient = rpcClients.Current;
+				await rpcClient.submitSolution.InvokeAsync(solutionResponse);
+			});
 		}
 		[JsonRpcMethod(name: "subspace_segmentHeaders")]
 		public async Task<SegmentHeader[]?> SegmentHeadersAsync(UInt64[] segment_indexes)
 		{
 			SegmentHeader[]? segmentHeaders = null;
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
 			await retryPolicy.Execute(async () =>
 			{
-				RpcClient rpcClient = clientPool.GetConnect();
-				segmentHeaders = await rpcClient.segmentHeaders.InvokeAsync(segment_indexes);
+				if (rpcClients.MoveNext())
+				{
+					RpcClient rpcClient = rpcClients.Current;
+					segmentHeaders = await rpcClient.segmentHeaders.InvokeAsync(segment_indexes);
+				}
 			});
 			return segmentHeaders;
 		}
@@ -159,30 +183,41 @@ namespace Subspace.Agent.Core
 		public async Task<ArraySegment<UInt16>?> PieceAsync(UInt64 piece_index)
 		{
 			ArraySegment<UInt16>? piece = null;
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Piece);
 			await retryPolicy.Execute(async () =>
 			{
-				RpcClient rpcClient = clientPool.GetConnect();
-				piece = await rpcClient.pieceMethod.InvokeAsync(piece_index);
+				if (rpcClients.MoveNext()) {
+					RpcClient rpcClient = rpcClients.Current;
+					piece = await rpcClient.pieceMethod.InvokeAsync(piece_index);
+				}
 			});
 			return piece;
 		}
 		[JsonRpcMethod(name: "subspace_acknowledgeArchivedSegmentHeader")]
 		public async Task AcknowledgeArchivedSegmentHeaderAsync(UInt64 segment_index)
 		{
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
 			await retryPolicy.Execute(async () =>
 			{
-				RpcClient rpcClient = clientPool.GetConnect();
-				await rpcClient.acknowledgeArchivedSegment.InvokeAsync(segment_index);
+				if (rpcClients.MoveNext())
+				{
+					RpcClient rpcClient = rpcClients.Current;
+					await rpcClient.acknowledgeArchivedSegment.InvokeAsync(segment_index);
+				}
 			});
 		}
 		[JsonRpcMethod(name: "subspace_lastSegmentHeaders")]
 		public async Task<SegmentHeader[]?> LastSegmentHeadersAsync(UInt64 limit)
 		{
 			SegmentHeader[]? segmentHeaders = null;
+			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
 			await retryPolicy.Execute(async () =>
 			{
-				RpcClient rpcClient = clientPool.GetConnect();
-				segmentHeaders = await rpcClient.lastSegmentHeaders.InvokeAsync(limit);
+				if (rpcClients.MoveNext())
+				{
+					RpcClient rpcClient = rpcClients.Current;
+					segmentHeaders = await rpcClient.lastSegmentHeaders.InvokeAsync(limit);
+				}
 			});
 			return segmentHeaders;
 		}
