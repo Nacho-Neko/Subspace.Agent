@@ -118,17 +118,19 @@ namespace Subspace.Agent.Core
 			return rpcClient;
 		}
 
-		public IEnumerable<RpcClient> GetConnect(NodePool Tag)
+		public List<RpcClient> GetConnect(NodePool Tag)
 		{
-			var client_pool = Persistent.Values.Where(it => it.Delay <= 1200);
+			var client_pool = Persistent.Values.Where(it => it.Delay <= 4000);
+			List<RpcClient> result = new List<RpcClient>();
 			List<RpcClient> rpcClients_frist = client_pool.Where(it => it.NodeInfo.Pools != null && it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
 			List<RpcClient> rpcClients_second = client_pool.Where(it => it.NodeInfo.Pools == null || !it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
-			rpcClients_frist.AddRange(rpcClients_second);
-			if (rpcClients_frist == null)
+			result.AddRange(rpcClients_frist);
+			result.AddRange(rpcClients_second);
+			if (result == null)
 			{
 				throw new Exception("Rpc 客户端池中未找到任何一个可用的Rpc客户端");
 			}
-			return rpcClients_frist;
+			return result;
 		}
 	}
 }

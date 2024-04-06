@@ -48,6 +48,10 @@ namespace Subspace.Agent.Core
 			// Server.TraceSource.Listeners.Add(new ConsoleTraceListener(logger));
 			CurrentClientIp.Value = originalIpAddress;
 			this.logger = logger;
+			logger.LogInformation($"版权声明 : ");
+			logger.LogInformation($"作者: Nacho-Neko TG: https://t.me/cyberrustic");
+			logger.LogInformation($"禁止使用本软件进行任何违法行为!从事任何违法行为与作者无关!");
+			logger.LogInformation($"如在中国境内发现违法使用举报邮箱: 0xuu888@gmail.com");
 			Server = new JsonRpc(messageHandler);
 			Server.Disconnected += Server_Disconnected;
 			Server.AddLocalRpcTarget(this);
