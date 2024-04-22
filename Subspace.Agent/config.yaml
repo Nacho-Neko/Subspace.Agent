@@ -1,8 +1,14 @@
 ﻿# Server
 # 服务器监听
-listen : "http://*:9944/"
+Listen : "http://127.0.0.1:9944/"
 # 节点池
 # Node Pool
-node:
-  - name: "Private Node-0"
-    url: "ws://43.248.117.35:8888"
+Nodes:
+  - Name: "seattle"
+    Url: "ws://seattle.gemini-3h.subspace.edgeone.net"
+    Pools: 
+      - Piece
+  - Name: "kiangsu"
+    Url: "ws://kiangsu.gemini-3h.subspace.edgeone.net"
+    Pools: 
+      - Submit

@@ -34,7 +34,10 @@ namespace Subspace.Agent.EventBus
             if (_eventHandlers.ContainsKey(eventType))
             {
                 EventBusHandler<TEventArgs> handler = (EventBusHandler<TEventArgs>)_eventHandlers[eventType];
-                _ = handler?.Invoke(sender, e);
+                _ = Task.Run(async () =>
+                {
+                    await handler?.Invoke(sender, e);
+                });
             }
         }
         public void Start()

@@ -15,7 +15,7 @@ using static Subspace.Agent.Core.Model.Method.SubmitSolutionResponseMethod;
 
 namespace Subspace.Agent.Core
 {
-	public class RpcServer : IDisposable
+    public class RpcServer : IDisposable
 	{
 		public static AsyncLocal<string?> CurrentClientIp = new AsyncLocal<string?>();
 		public event EventHandler<RpcServer>? Disconnected;
@@ -48,10 +48,6 @@ namespace Subspace.Agent.Core
 			// Server.TraceSource.Listeners.Add(new ConsoleTraceListener(logger));
 			CurrentClientIp.Value = originalIpAddress;
 			this.logger = logger;
-			logger.LogInformation($"版权声明 : ");
-			logger.LogInformation($"作者: Nacho-Neko TG: https://t.me/cyberrustic");
-			logger.LogInformation($"禁止使用本软件进行任何违法行为!从事任何违法行为与作者无关!");
-			logger.LogInformation($"如在中国境内发现违法使用举报邮箱: 0xuu888@gmail.com");
 			Server = new JsonRpc(messageHandler);
 			Server.Disconnected += Server_Disconnected;
 			Server.AddLocalRpcTarget(this);
@@ -125,8 +121,8 @@ namespace Subspace.Agent.Core
 		public async Task<FarmerAppInfo> GetFarmerAppInfoAsync()
 		{
 			FarmerAppInfo farmerAppInfo = null;
-			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
-			await retryPolicy.Execute(async () =>
+            IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Submit);
+            await retryPolicy.Execute(async () =>
 			{
 				if (rpcClients.MoveNext())
 				{
@@ -163,8 +159,8 @@ namespace Subspace.Agent.Core
 		public async Task<SegmentHeader[]?> SegmentHeadersAsync(UInt64[] segment_indexes)
 		{
 			SegmentHeader[]? segmentHeaders = null;
-			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
-			await retryPolicy.Execute(async () =>
+            IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Submit);
+            await retryPolicy.Execute(async () =>
 			{
 				if (rpcClients.MoveNext())
 				{
@@ -196,8 +192,8 @@ namespace Subspace.Agent.Core
 		[JsonRpcMethod(name: "subspace_acknowledgeArchivedSegmentHeader")]
 		public async Task AcknowledgeArchivedSegmentHeaderAsync(UInt64 segment_index)
 		{
-			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
-			await retryPolicy.Execute(async () =>
+            IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Submit);
+            await retryPolicy.Execute(async () =>
 			{
 				if (rpcClients.MoveNext())
 				{
@@ -210,8 +206,8 @@ namespace Subspace.Agent.Core
 		public async Task<SegmentHeader[]?> LastSegmentHeadersAsync(UInt64 limit)
 		{
 			SegmentHeader[]? segmentHeaders = null;
-			IEnumerator<RpcClient> rpcClients = clientPool.GetConnects();
-			await retryPolicy.Execute(async () =>
+            IEnumerator<RpcClient> rpcClients = clientPool.GetConnects(NodePool.Submit);
+            await retryPolicy.Execute(async () =>
 			{
 				if (rpcClients.MoveNext())
 				{
@@ -310,11 +306,10 @@ namespace Subspace.Agent.Core
 			{
 				if (new_slotInfo.slotNumber > last_slotNumber)
 				{
-					this.last_slotInfo.Stop();
-					this.last_slotInfo = new_slotInfo;
-					this.last_slotInfo.Start();
-
-					sender.logger.LogInformation($"Imported #{new_slotInfo.slotNumber} from {sender.NodeInfo.Name} interval {stopwatch.ElapsedMilliseconds}");
+                    last_slotInfo.Stop();
+                    last_slotInfo = new_slotInfo;
+                    last_slotInfo.Start();
+                    sender.logger.LogInformation($"Imported #{new_slotInfo.slotNumber} from {sender.NodeInfo.Name} interval {stopwatch.ElapsedMilliseconds}");
 					sender.Interval = 0;
 					sender.Stopwatch.Restart();
 					stopwatch.Restart();
@@ -332,10 +327,10 @@ namespace Subspace.Agent.Core
 				}
 				else
 				{
-					if (new_slotInfo.slotNumber == this.last_slotInfo.slotNumber)
+                    if (new_slotInfo.slotNumber == last_slotInfo.slotNumber)
 					{
-						// 距离上一个插槽延迟是 更新间隔 + sender.Latency
-						sender.Interval = this.last_slotInfo.ElapsedMilliseconds() + 1;
+                        // 距离上一个插槽延迟是 更新间隔 + sender.Latency
+                        sender.Interval = last_slotInfo.ElapsedMilliseconds() + 1;
 						sender.Stopwatch.Restart();
 					}
 				}

@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace Subspace.Agent.Core
 {
-	public class RpcClient : JsonRpc, IDisposable
+    public class RpcClient : JsonRpc, IDisposable
 	{
 		public delegate void EventBusHandler(RpcClient sender, ILifetimeScope e);
 		public event EventBusHandler? onDisconnected;
@@ -81,15 +81,6 @@ namespace Subspace.Agent.Core
 			result = await rewardSigningEven.SubscribeAsync();
 			Thread.Sleep(100);
 			result = await slotInfoEven.SubscribeAsync();
-			try
-			{
-				await getFarmerAppInfo.InvokeAsync();
-			}
-			catch (Exception)
-			{
-				logger.LogError($"{nodeInfo.Name} 已连接，但是无法返回正常数据!");
-				Interval = -1;
-			}
 		}
 	}
 }

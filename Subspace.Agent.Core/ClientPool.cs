@@ -21,7 +21,7 @@ namespace Subspace.Agent.Core
 		}
 		public async Task StartAsync(ConfigModel configModel)
 		{
-			List<NodeInfo> nodes = configModel.Nodes;
+			List<NodeInfo>? nodes = configModel.Nodes;
 			foreach (var node in nodes)
 			{
 				var scope = lifetimeScope.BeginLifetimeScope(node.Name);
@@ -95,12 +95,12 @@ namespace Subspace.Agent.Core
 					{
 						reConnectQueues.Remove(reConnectSuces);
 					}
-				Thread.Sleep(10000);
+				Thread.Sleep(30000);
 			}
 		}
 		public RpcClient GetConnect()
 		{
-			var client_pool = Persistent.Values.Where(it => it.Delay <= 4000);
+			var client_pool = Persistent.Values;
 			RpcClient? rpcClient = null;
 			long base_latency = long.MaxValue;
 			foreach (var client in Persistent.Values)
@@ -121,16 +121,16 @@ namespace Subspace.Agent.Core
 
 		public IEnumerator<RpcClient> GetConnects()
 		{
-			var client_pool = Persistent.Values.Where(it => it.Delay <= 2000);
+			var client_pool = Persistent.Values;
 			List<RpcClient> rpcClients = client_pool.OrderBy(it => it.Delay).ToList();
 			return rpcClients.GetEnumerator();
 		}
 		public IEnumerator<RpcClient> GetConnects(NodePool Tag)
 		{
-			var client_pool = Persistent.Values.Where(it => it.Delay <= 2000);
+			var client_pool = Persistent.Values;
 			List<RpcClient> result = new List<RpcClient>();
 			List<RpcClient> rpcClients_frist = client_pool.Where(it => it.NodeInfo.Pools != null && it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
-			List<RpcClient> rpcClients_second = client_pool.Where(it => it.NodeInfo.Pools == null || !it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
+            List<RpcClient> rpcClients_second = client_pool.Where(it => it.NodeInfo.Pools == null || !it.NodeInfo.Pools.Contains(Tag)).OrderBy(it => it.Delay).ToList();
 			result.AddRange(rpcClients_frist);
 			result.AddRange(rpcClients_second);
 			if (result == null)

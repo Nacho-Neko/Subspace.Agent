@@ -5,7 +5,6 @@ namespace Subspace.Agent.Core.Model.Method
 {
     public class PieceMethod
     {
-
         private readonly ILogger logger;
         private readonly RpcClient rpcClient;
         public PieceMethod(ILogger<PieceMethod> logger, RpcClient rpcClient)

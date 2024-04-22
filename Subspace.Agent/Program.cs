@@ -59,11 +59,9 @@ var container = builder.Build();
 var busControl = container.Resolve<IBusControl>();
 busControl.Start();
 
-
 var yamlDeserializer = new DeserializerBuilder().Build();
 var yaml = File.ReadAllText("config.yaml");
 var config = yamlDeserializer.Deserialize<ConfigModel>(yaml);
-
 
 ClientPool clientPool = container.Resolve<ClientPool>();
 await clientPool.StartAsync(config);
