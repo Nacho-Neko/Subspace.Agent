@@ -38,10 +38,10 @@ namespace Subspace.Agent.Core
 		public SubmitSolutionResponseMethod submitSolution;
 
 		public long Interval = 0;
-		/// <summary>
-		/// 节点获取2次区块之间的间隔
-		/// </summary>
-		public long Delay { get { return Interval + this.Stopwatch.ElapsedMilliseconds; } }
+        /// <summary>
+        /// 节点获取2次区块之间的间隔
+        /// </summary>
+        public long Delay { get { return Interval + this.Stopwatch.ElapsedMilliseconds; } }
 		public NodeInfo NodeInfo;
 
 		public bool Available { get { if (nodeSyncStatusChangeEven == null) return false; return nodeSyncStatusChangeEven.Synced; } }
